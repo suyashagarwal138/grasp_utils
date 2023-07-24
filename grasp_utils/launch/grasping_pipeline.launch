@@ -1,0 +1,17 @@
+<launch>
+
+  <!-- Launch ROS Package Template Node -->
+  <node pkg="grasp_utils" type="grasp_utils_grasp_node" name="grasp_executor" output="screen">
+    <rosparam command="load" file="$(dirname)/../config/default.yaml" />
+    <!-- Remap private topic to shared global topic -->
+    <remap from="~grasps" to="/grasps" />
+  </node>
+
+  <!-- Launch ROS Package Template Node -->
+  <node pkg="grasp_utils" type="grasp_utils_det_node" name="grasp_detector" output="screen">
+    <rosparam command="load" file="$(dirname)/../config/default.yaml" />
+    <!-- Remap private topic to shared global topic -->
+    <remap from="~grasps" to="/grasps" />
+  </node>
+
+</launch>

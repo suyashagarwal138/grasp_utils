@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- Launch ROS Package Template Node -->
+  <node pkg="ros_package_template" type="ros_package_template" name="grasp_exec" output="screen">
+    <rosparam command="load" file="$(dirname)/../config/default.yaml" />
+    <!-- <param name = "subscriber_topic" value = "35"/> -->
+  </node>
+
+</launch>
