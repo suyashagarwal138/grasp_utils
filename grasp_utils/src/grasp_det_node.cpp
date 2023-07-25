@@ -12,48 +12,47 @@ int main(int argc, char **argv)
     grasp_utils::GraspDetector graspDetector(nodeHandle);
 
     // define the publisher data member of the graspDetector object.
-    // set it to advertise a message of type Grasp, which is from the moveit documentation.
-    // graspDetector.set_pub(nodeHandle.advertise<moveit_msgs::Grasp>("grasps", 1000));
-
+    // set it to advertise a message of type GraspArray.
+    // GraspArray is simply an array of moveit_msgs::Grasp messages. 
     graspDetector.set_pub(nodeHandle.advertise<grasp_utils::GraspArray>("grasps", 1000));
 
-
+    // Loop at 0.4 Hz
     ros::Rate loop_rate(0.4);
-
+    
     while (ros::ok())
     {
-
-        // declare a grasp message
-        moveit_msgs::Grasp grasp_msg;
-
-        grasp_msg.id = "This topic works!";
-
-        // Also set the pose randomly
-        grasp_msg.grasp_pose.pose.position.x = 1;
-        grasp_msg.grasp_pose.pose.position.y = 0;
-        grasp_msg.grasp_pose.pose.position.z = 1;
-
-        grasp_msg.grasp_pose.pose.orientation.w = 0;
-        grasp_msg.grasp_pose.pose.orientation.x = 1;
-        grasp_msg.grasp_pose.pose.orientation.y = 0;
-        grasp_msg.grasp_pose.pose.orientation.z = 1;
-
+        // Initialise a GraspArray
         grasp_utils::GraspArray grasp_array;
 
-        for(int i = 0; i < 64; i++){
-            // generate 64 random grasp poses
+        // generate 64 random grasp poses
+        int no_of_grasps = 64;
+
+        for(int i = 0; i < no_of_grasps; i++){
+            // Use the no. of the current iteration as the RNG seed
             srand(i);
+
+            // Make a Grasp that will get pushed onto the array
+            moveit_msgs::Grasp grasp;
+
+            // Randomise the position values
             int x = rand()%10;
             int y = rand()%10;
             int z = rand()%10;
-            moveit_msgs::Grasp grasp;
             grasp.grasp_pose.pose.position.x = x;
             grasp.grasp_pose.pose.position.y = y;
             grasp.grasp_pose.pose.position.z = z;
+
+            // The same could also be done for the quaternion defining orientation, e.g.
+            // grasp.grasp_pose.pose.orientation.w = 1;
+
+            // Set a unique identifier
             grasp.id = "This is grasp pose no. " + std::to_string(i);
+
+            // Add this grasp to the array
             grasp_array.array.push_back(grasp);
         }
 
+        // Publish the array of grasps onto the topic
         graspDetector.get_pub().publish(grasp_array);
 
         ros::spinOnce();
