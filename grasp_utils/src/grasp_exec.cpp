@@ -20,17 +20,7 @@ namespace grasp_utils
   GraspExecutor::GraspExecutor(ros::NodeHandle &nodeHandle): nodeHandle_(nodeHandle)
   {
 
-    // readParameters is a bool initialised in the class def in the header file.
-    // if (!readParameters())
-    // {
-    //   ROS_ERROR("Could not read parameters.");
-    //   ros::requestShutdown();
-    // }
-
     subscriber_ = nodeHandle_.subscribe("grasps",1000,graspsCallback);
-
-    // Create service server for "get_average" service. nodeHandle_ advertises the service.
-    // serviceServer_ = nodeHandle_.advertiseService("get_average", &RosPackageTemplate::serviceCallback, this);
 
     // Confirm the node launched.
     ROS_INFO("Successfully launched node.");
