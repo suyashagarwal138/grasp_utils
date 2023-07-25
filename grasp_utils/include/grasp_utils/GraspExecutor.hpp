@@ -15,9 +15,7 @@
 namespace grasp_utils
 {
 
-  /*!
-   * Main class for the node to handle the ROS interfacing.
-   */
+  // Class to handle the node that interfaces with ROS MoveIt and subscribes to the /grasps topic.
   class GraspExecutor
   {
   public:
@@ -33,26 +31,6 @@ namespace grasp_utils
     virtual ~GraspExecutor();
 
   private:
-    /*!
-     * Reads and verifies the ROS parameters.
-     * @return true if successful.
-     */
-    bool readParameters();
-
-    /*!
-     * ROS topic callback method.
-     * @param message the received message.
-     */
-    void topicCallback(const sensor_msgs::Temperature &message);
-
-    /*!
-     * ROS service server callback.
-     * @param request the request of the service.
-     * @param response the provided response.
-     * @return true if successful, false otherwise.
-     */
-    bool serviceCallback(std_srvs::Trigger::Request &request,
-                         std_srvs::Trigger::Response &response);
 
     //! ROS node handle.
     ros::NodeHandle &nodeHandle_;
@@ -62,11 +40,7 @@ namespace grasp_utils
 
     //! ROS topic name to subscribe to.
     std::string subscriberTopic_;
-
-    //! ROS service server.
-    ros::ServiceServer serviceServer_;
-
-
+    
   };
 
 } /* namespace */

@@ -11,9 +11,11 @@
 
 #include <grasp_utils/GraspArray.h>
 
-
 namespace grasp_utils
 {
+
+  // Class to handle the node that will subscribe to /scan for point cloud data
+  // Generates 64 candidates grasps and publishes them on the topic /grasps
   class GraspDetector
   {
   public:
@@ -21,14 +23,8 @@ namespace grasp_utils
      * Constructor.
      * @param nodeHandle the ROS node handle.
      */
-    // GraspDetector(ros::NodeHandle &nodeHandle);
     
-    GraspDetector(ros::NodeHandle &nodeHandle) : nodeHandle_(nodeHandle){
-
-      // publisher_ = nodeHandle_.advertise<std_msgs::String>("grasps",1000);
-
-
-    };
+    GraspDetector(ros::NodeHandle &nodeHandle) : nodeHandle_(nodeHandle){};
 
     void set_pub(ros::Publisher x){
       publisher_ = x;
@@ -37,12 +33,6 @@ namespace grasp_utils
     ros::Publisher get_pub(){
       return publisher_;
     }
-
-
-    /*!
-     * Destructor.
-     */
-    // virtual ~GraspDetector();
 
   private:
     ros::NodeHandle &nodeHandle_;
