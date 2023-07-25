@@ -7,9 +7,30 @@
 // Just print the id of the first grasp in the array
 void graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
 
-  moveit_msgs::Grasp first_grasp = msg->array[0];
-  ROS_INFO("I heard: [%s]", first_grasp.id.c_str());
+  // No longer need this stuff
+  // moveit_msgs::Grasp first_grasp = msg->array[0];
+  // ROS_INFO("I heard: [%s]", first_grasp.id.c_str());
 
+  int no_of_elements = msg->array.size();
+
+  // Initialise two variables that we will use in the loop to find the best grasp
+  float best_grasp_quality = 0.0;
+  int best_grasp_id = 0;
+
+  // Loop through the array of grasps to find the highest grasp quality
+  for(int i = 0; i < no_of_elements; i++){
+
+    if (msg->array[i].grasp_quality > best_grasp_quality){
+      best_grasp_quality = msg->array[i].grasp_quality;
+      best_grasp_id = i;
+    }
+
+  };
+
+  // Output the best grasp.
+  // For a 64-grasp array, this will be a number from 0  to 63. 
+  std::string output_msg = "Best grasp was no. " + std::to_string(best_grasp_id);
+  ROS_INFO("Best grasp was no. %d", best_grasp_id);
 }
 
 // opens the namespace

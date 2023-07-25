@@ -19,6 +19,9 @@ int main(int argc, char **argv)
     // Loop at 0.4 Hz
     ros::Rate loop_rate(0.4);
     
+    // Set the RNG seed so that each message generated is unique
+    srand(time(NULL));
+    
     while (ros::ok())
     {
         // Initialise a GraspArray
@@ -26,21 +29,22 @@ int main(int argc, char **argv)
 
         // generate 64 random grasp poses
         int no_of_grasps = 64;
-
+    
         for(int i = 0; i < no_of_grasps; i++){
-            // Use the no. of the current iteration as the RNG seed
-            srand(i);
 
             // Make a Grasp that will get pushed onto the array
             moveit_msgs::Grasp grasp;
 
-            // Randomise the position values
-            int x = rand()%10;
-            int y = rand()%10;
-            int z = rand()%10;
+            // Randomise the position variables with values from 0 to 9
+            float x = rand()%10;
+            float y = rand()%10;
+            float z = rand()%10;
             grasp.grasp_pose.pose.position.x = x;
             grasp.grasp_pose.pose.position.y = y;
             grasp.grasp_pose.pose.position.z = z;
+
+            // Randomise the grasp score
+            grasp.grasp_quality = y;
 
             // The same could also be done for the quaternion defining orientation, e.g.
             // grasp.grasp_pose.pose.orientation.w = 1;
