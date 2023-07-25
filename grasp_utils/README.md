@@ -1,8 +1,8 @@
-# Package Name
+# grasp_utils
 
 ## Overview
 
-This is a template: replace, remove, and add where required. Describe here what this package does and what it's meant for in a few sentences.
+This is a package for setting up a simple pipleine for grasp detection and execution.
 
 **Keywords:** example, package, template
 
@@ -20,9 +20,6 @@ The PACKAGE NAME package has been tested under [ROS] Indigo, Melodic and Noetic 
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
 [![Build Status](http://rsl-ci.ethz.ch/buildStatus/icon?job=ros_best_practices)](http://rsl-ci.ethz.ch/job/ros_best_practices/)
-
-
-![Example image](doc/example.jpg)
 
 
 ### Publications
