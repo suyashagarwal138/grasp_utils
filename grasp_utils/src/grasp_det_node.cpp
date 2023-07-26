@@ -36,14 +36,16 @@ int main(int argc, char **argv)
             moveit_msgs::Grasp grasp;
 
             // Randomise the position variables with values from 0 to 9
-            float x = rand()%10;
-            float y = rand()%10;
-            float z = rand()%10;
+            float rm = RAND_MAX;
+
+            float x = (rand()/rm) * 9;
+            float y = (rand()/rm) * 9;
+            float z = (rand()/rm) * 9;
             grasp.grasp_pose.pose.position.x = x;
             grasp.grasp_pose.pose.position.y = y;
             grasp.grasp_pose.pose.position.z = z;
 
-            // Randomise the grasp score
+            // Randomise the grasp score, also from 0 to 9
             grasp.grasp_quality = y;
 
             // The same could also be done for the quaternion defining orientation, e.g.
