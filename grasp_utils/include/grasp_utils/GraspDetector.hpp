@@ -11,6 +11,7 @@
 
 #include <grasp_utils/GraspArray.h>
 
+
 namespace grasp_utils
 {
 

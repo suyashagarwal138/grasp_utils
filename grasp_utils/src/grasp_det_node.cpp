@@ -48,9 +48,8 @@ int main(int argc, char **argv)
             // Randomise the grasp score, also from 0 to 9
             grasp.grasp_quality = y;
 
-            // The same could also be done for the quaternion defining orientation, e.g.
-            // grasp.grasp_pose.pose.orientation.w = 1;
-
+            // The same can be done for the quaternion defining orientation
+            
             // Set a unique identifier
             grasp.id = "This is grasp pose no. " + std::to_string(i);
 

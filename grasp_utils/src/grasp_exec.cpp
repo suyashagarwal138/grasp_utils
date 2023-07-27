@@ -4,6 +4,8 @@
 // STD
 #include <string>
 
+moveit_msgs::Grasp best_grasp;
+
 // Just print the id of the first grasp in the array
 void graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
 
@@ -31,6 +33,9 @@ void graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
   // For a 64-grasp array, this will be a number from 0  to 63. 
   std::string output_msg = "Best grasp was no. " + std::to_string(best_grasp_id);
   ROS_INFO("Best grasp was no. %d", best_grasp_id);
+
+  // Set the best grasp so it can be executed
+  best_grasp = msg->array[best_grasp_id];
 }
 
 // opens the namespace
@@ -41,6 +46,8 @@ namespace grasp_utils
   {
     // Grasp Executor shoud subscribe to the /grasps topic
     subscriber_ = nodeHandle_.subscribe("grasps",1000,graspsCallback);
+
+    grasp_ = best_grasp;
 
     // Confirm the node launched.
     ROS_INFO("Successfully launched node.");

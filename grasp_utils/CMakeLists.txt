@@ -1,8 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 project(grasp_utils)
+add_definitions(-std=c++17)
 
 find_package(catkin_simple REQUIRED)
+find_package(Boost REQUIRED)
+find_package(Eigen3 REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
+include_directories(
+        include
+        ${catkin_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIRS}
+)
 
 catkin_package()
 
@@ -61,7 +70,7 @@ cs_export()
 # catkin_package(
 #   INCLUDE_DIRS
 #     include
-#     ## This is only necessary because Eigen3 sets a non-standard EIGEN3_INCLUDE_DIR variable
+#     # This is only necessary because Eigen3 sets a non-standard EIGEN3_INCLUDE_DIR variable
 #     ${EIGEN3_INCLUDE_DIR}
 #   LIBRARIES
 #     ${PROJECT_NAME}_core
@@ -72,7 +81,7 @@ cs_export()
 #   DEPENDS
 #   ## find_package(Eigen3) provides a non standard EIGEN3_INCLUDE_DIR instead of Eigen3_INCLUDE_DIRS.
 #   ## Therefore, the DEPEND does not work as expected and we need to add the directory to the INCLUDE_DIRS
-#   # Eigen3
+#   Eigen3
 
 #   ## Boost is not part of the DEPENDS since it is only used in source files,
 #   ## Dependees do not depend on Boost when they depend on this package.
