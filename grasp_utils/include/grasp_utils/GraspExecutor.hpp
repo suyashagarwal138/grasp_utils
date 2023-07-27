@@ -7,9 +7,14 @@
 #include <std_msgs/String.h>
 
 #include <vector>
-#include <moveit_msgs/Grasp.h>
 
+#include <moveit_msgs/Grasp.h>
 #include <grasp_utils/GraspArray.h>
+
+// MoveIt integration
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/move_group_interface/move_group_interface.h>
+
 
 
 namespace grasp_utils
