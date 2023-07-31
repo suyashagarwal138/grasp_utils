@@ -65,6 +65,7 @@ namespace grasp_utils
       posture.points[0].time_from_start = ros::Duration(0.5);
     }
     
+    // Old version of pick which took move_group as arg
     void pick(moveit::planning_interface::MoveGroupInterface& move_group)
     {
       // For now, just attempting 1 grasp to get the pipline running. 
@@ -115,6 +116,57 @@ namespace grasp_utils
       move_group.pick("object", grasp_);
     }
     
+    // Using this version which takes grasp as input
+    void pick(moveit_msgs::Grasp grasp_)
+    {
+      // For now, just attempting 1 grasp to get the pipline running. 
+      // Later, will change so that a GraspArray is sent to MoveIt. 
+
+      // Setting grasp pose
+      // ++++++++++++++++++++++
+      // This is the pose of panda_link8. |br|
+      // Make sure that when you set the grasp_pose, you are setting it to be the pose of the last link in
+      // your manipulator which in this case would be `"panda_link8"` You will have to compensate for the
+      // transform from `"panda_link8"` to the palm of the end effector.
+      grasp_.grasp_pose.header.frame_id = "panda_link0";
+
+      // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
+      tf2::Quaternion orientation;
+      orientation.setRPY(-tau / 4, -tau / 8, -tau / 4);
+      grasp_.grasp_pose.pose.orientation = tf2::toMsg(orientation);
+
+      // Setting pre-grasp approach
+      // ++++++++++++++++++++++++++
+      /* Defined with respect to frame_id */
+      grasp_.pre_grasp_approach.direction.header.frame_id = "panda_link0";
+      /* Direction is set as positive x axis */
+      grasp_.pre_grasp_approach.direction.vector.x = 1.0;
+      grasp_.pre_grasp_approach.min_distance = 0.095;
+      grasp_.pre_grasp_approach.desired_distance = 0.115;
+
+      // Setting post-grasp retreat
+      // ++++++++++++++++++++++++++
+      /* Defined with respect to frame_id */
+      grasp_.post_grasp_retreat.direction.header.frame_id = "panda_link0";
+      /* Direction is set as positive z axis */
+      grasp_.post_grasp_retreat.direction.vector.z = 1.0;
+      grasp_.post_grasp_retreat.min_distance = 0.1;
+      grasp_.post_grasp_retreat.desired_distance = 0.25;
+
+      // Setting posture of eef before grasp
+      // +++++++++++++++++++++++++++++++++++
+      openGripper(grasp_.pre_grasp_posture);
+
+      // Setting posture of eef during grasp
+      // +++++++++++++++++++++++++++++++++++
+      closedGripper(grasp_.grasp_posture);
+
+      // Set support surface as table1.
+      group.setSupportSurfaceName("table1");
+      // Call pick to pick up the object using the grasp(s) given
+      group.pick("object", grasp_);
+    }
+
     void place(moveit::planning_interface::MoveGroupInterface& group)
     {
       // Calling place function may lead to "All supplied place locations failed. Retrying last
@@ -166,11 +218,16 @@ namespace grasp_utils
       group.place("object", place_location);
     }
 
+    // Add graspsCallback as a member functionn
+    void graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg);
 
     /*!
      * Destructor.
      */
     virtual ~GraspExecutor();
+
+    // assign movegroup here as member variable
+    moveit::planning_interface::MoveGroupInterface group{"panda_arm"};
 
   private:
 
@@ -188,4 +245,47 @@ namespace grasp_utils
     
   };
 
+  
+  // Define member function graspsCallback
+  void GraspExecutor::graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
+
+    // No longer need this stuff
+    // moveit_msgs::Grasp first_grasp = msg->array[0];
+    // ROS_INFO("I heard: [%s]", first_grasp.id.c_str());
+
+    int no_of_elements = msg->array.size();
+
+    // Initialise two variables that we will use in the loop to find the best grasp
+    float best_grasp_quality = 0.0;
+    int best_grasp_id = 0;
+
+    // Loop through the array of grasps to find the highest grasp quality
+    for(int i = 0; i < no_of_elements; i++){
+
+      if (msg->array[i].grasp_quality > best_grasp_quality){
+        best_grasp_quality = msg->array[i].grasp_quality;
+        best_grasp_id = i;
+      }
+
+    };
+
+    // Output the best grasp.
+    // For a 64-grasp array, this will be a number from 0  to 63. 
+    std::string output_msg = "Best grasp was no. " + std::to_string(best_grasp_id);
+    ROS_INFO("Best grasp was no. %d", best_grasp_id);
+
+    // Set the best grasp so it can be executed
+    moveit_msgs::Grasp best_grasp = msg->array[best_grasp_id];
+
+    // Set the maximum planning time
+    group.setPlanningTime(45.0);
+
+    // Execute the best grasp
+    pick(best_grasp);
+  }
+
+
+
 } /* namespace */
+
+

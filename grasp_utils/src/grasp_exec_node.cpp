@@ -13,20 +13,8 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(0.4);
 
-  // while (ros::ok())
-  // {
-  //   ros::spinOnce();
-  //   loop_rate.sleep();
-  // }
-
-  // Declare a MoveGroupInterface that we can use for picking and placing
-  moveit::planning_interface::MoveGroupInterface group("panda_arm");
-
-  // Set the maximum planning time
-  group.setPlanningTime(45.0);
-
-  // call the pick function
-  graspExecutor.pick(group);
+  // Declare the planning scene interface - not used for now
+  moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
   ros::spin();
   return 0;
