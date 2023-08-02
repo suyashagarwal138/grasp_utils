@@ -15,7 +15,7 @@ namespace grasp_utils
 
     // Publish marker at attempted grasp pose
     marker_pub = nodeHandle_.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-
+    
     // Confirm the node launched.
     ROS_INFO("Successfully launched node.");
 

@@ -240,10 +240,6 @@ namespace grasp_utils
   // Define member function graspsCallback
   void GraspExecutor::graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
 
-    // No longer need this stuff
-    // moveit_msgs::Grasp first_grasp = msg->array[0];
-    // ROS_INFO("I heard: [%s]", first_grasp.id.c_str());
-
     int no_of_elements = msg->array.size();
 
     // Initialise two variables that we will use in the loop to find the best grasp
@@ -317,11 +313,13 @@ namespace grasp_utils
 
       marker.lifetime = ros::Duration();
 
-      marker_pub.publish(marker);
+      marker_pub.publish(marker);      
+
+      // call pick using the best grasp
+      pick(best_grasp);
     }
 
-    // call pick using the best grasp
-    pick(best_grasp);
+    
   }
 
 
