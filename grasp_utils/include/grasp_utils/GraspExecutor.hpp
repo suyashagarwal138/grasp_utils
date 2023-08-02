@@ -11,6 +11,7 @@
 // Message types
 #include <moveit_msgs/Grasp.h>
 #include <grasp_utils/GraspArray.h>
+#include <visualization_msgs/Marker.h>
 
 // MoveIt
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -66,55 +67,48 @@ namespace grasp_utils
     }
     
     // Old version of pick which took move_group as arg
-    void pick(moveit::planning_interface::MoveGroupInterface& move_group)
-    {
-      // For now, just attempting 1 grasp to get the pipline running. 
-      // Later, will change so that a GraspArray is sent to MoveIt. 
-
-      // Setting grasp pose
-      // ++++++++++++++++++++++
-      // This is the pose of panda_link8. |br|
-      // Make sure that when you set the grasp_pose, you are setting it to be the pose of the last link in
-      // your manipulator which in this case would be `"panda_link8"` You will have to compensate for the
-      // transform from `"panda_link8"` to the palm of the end effector.
-      grasp_.grasp_pose.header.frame_id = "panda_link0";
-
-      // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
-      tf2::Quaternion orientation;
-      orientation.setRPY(-tau / 4, -tau / 8, -tau / 4);
-      grasp_.grasp_pose.pose.orientation = tf2::toMsg(orientation);
-
-      // Setting pre-grasp approach
-      // ++++++++++++++++++++++++++
-      /* Defined with respect to frame_id */
-      grasp_.pre_grasp_approach.direction.header.frame_id = "panda_link0";
-      /* Direction is set as positive x axis */
-      grasp_.pre_grasp_approach.direction.vector.x = 1.0;
-      grasp_.pre_grasp_approach.min_distance = 0.095;
-      grasp_.pre_grasp_approach.desired_distance = 0.115;
-
-      // Setting post-grasp retreat
-      // ++++++++++++++++++++++++++
-      /* Defined with respect to frame_id */
-      grasp_.post_grasp_retreat.direction.header.frame_id = "panda_link0";
-      /* Direction is set as positive z axis */
-      grasp_.post_grasp_retreat.direction.vector.z = 1.0;
-      grasp_.post_grasp_retreat.min_distance = 0.1;
-      grasp_.post_grasp_retreat.desired_distance = 0.25;
-
-      // Setting posture of eef before grasp
-      // +++++++++++++++++++++++++++++++++++
-      openGripper(grasp_.pre_grasp_posture);
-
-      // Setting posture of eef during grasp
-      // +++++++++++++++++++++++++++++++++++
-      closedGripper(grasp_.grasp_posture);
-
-      // Set support surface as table1.
-      move_group.setSupportSurfaceName("table1");
-      // Call pick to pick up the object using the grasp(s) given
-      move_group.pick("object", grasp_);
-    }
+    // void pick(moveit::planning_interface::MoveGroupInterface& move_group)
+    // {
+    //   // For now, just attempting 1 grasp to get the pipline running. 
+    //   // Later, will change so that a GraspArray is sent to MoveIt. 
+    //   // Setting grasp pose
+    //   // ++++++++++++++++++++++
+    //   // This is the pose of panda_link8. |br|
+    //   // Make sure that when you set the grasp_pose, you are setting it to be the pose of the last link in
+    //   // your manipulator which in this case would be `"panda_link8"` You will have to compensate for the
+    //   // transform from `"panda_link8"` to the palm of the end effector.
+    //   grasp_.grasp_pose.header.frame_id = "panda_link0";
+    //   // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
+    //   tf2::Quaternion orientation(1.0,0.0,0.0,0.0);                                   // chosen this as default orientation
+    //   // orientation.setRPY(-tau / 4, -tau / 8, -tau / 4);
+    //   grasp_.grasp_pose.pose.orientation = tf2::toMsg(orientation);
+    //   // Setting pre-grasp approach
+    //   // ++++++++++++++++++++++++++
+    //   /* Defined with respect to frame_id */
+    //   grasp_.pre_grasp_approach.direction.header.frame_id = "panda_link0";
+    //   /* Direction is set as positive x axis */
+    //   grasp_.pre_grasp_approach.direction.vector.x = 1.0;
+    //   grasp_.pre_grasp_approach.min_distance = 0.095;
+    //   grasp_.pre_grasp_approach.desired_distance = 0.115;
+    //   // Setting post-grasp retreat
+    //   // ++++++++++++++++++++++++++
+    //   /* Defined with respect to frame_id */
+    //   grasp_.post_grasp_retreat.direction.header.frame_id = "panda_link0";
+    //   /* Direction is set as positive z axis */
+    //   grasp_.post_grasp_retreat.direction.vector.z = 1.0;
+    //   grasp_.post_grasp_retreat.min_distance = 0.1;
+    //   grasp_.post_grasp_retreat.desired_distance = 0.25;
+    //   // Setting posture of eef before grasp
+    //   // +++++++++++++++++++++++++++++++++++
+    //   openGripper(grasp_.pre_grasp_posture);
+    //   // Setting posture of eef during grasp
+    //   // +++++++++++++++++++++++++++++++++++
+    //   closedGripper(grasp_.grasp_posture);
+    //   // Set support surface as table1.
+    //   move_group.setSupportSurfaceName("table1");
+    //   // Call pick to pick up the object using the grasp(s) given
+    //   move_group.pick("object", grasp_);
+    // }
     
     // Using this version which takes grasp as input
     void pick(moveit_msgs::Grasp grasp_)
@@ -231,17 +225,14 @@ namespace grasp_utils
 
   private:
 
-    //! ROS node handle.
+    // ROS node handle.
     ros::NodeHandle &nodeHandle_;
 
-    //! ROS topic subscriber.
+    // ROS topic subscriber.
     ros::Subscriber subscriber_;
 
-    //! ROS topic name to subscribe to.
-    std::string subscriberTopic_;
-
-    // Grasp to execute
-    moveit_msgs::Grasp grasp_;
+    // ROS publisher for Rviz marker
+    ros::Publisher marker_pub;
     
   };
 
@@ -280,7 +271,56 @@ namespace grasp_utils
     // Set the maximum planning time
     group.setPlanningTime(45.0);
 
-    // Execute the best grasp
+    // Debugging outputs - delete later
+    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.x);
+    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.y);
+    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.z);
+
+    // All this code is for the marker
+    while (ros::ok())
+    {
+      visualization_msgs::Marker marker;
+      // Set the frame ID and timestamp.  See the TF tutorials for information on these.
+      marker.header.frame_id = "panda_link0";
+      marker.header.stamp = ros::Time::now();
+
+      // Set the namespace and id for this marker.  This serves to create a unique ID
+      // Any marker sent with the same namespace and id will overwrite the old one
+      marker.ns = "basic_shapes";
+      marker.id = 0;
+
+      // Set the marker type.
+      marker.type = visualization_msgs::Marker::CUBE;
+
+      // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+      marker.action = visualization_msgs::Marker::ADD;
+
+      // Set the pose of the marker (should be at pose of attempted grasp)
+      marker.pose.position.x = best_grasp.grasp_pose.pose.position.x;
+      marker.pose.position.y = best_grasp.grasp_pose.pose.position.y;
+      marker.pose.position.z = best_grasp.grasp_pose.pose.position.z;
+      marker.pose.orientation.x = best_grasp.grasp_pose.pose.orientation.x;
+      marker.pose.orientation.y = best_grasp.grasp_pose.pose.orientation.y;
+      marker.pose.orientation.z = best_grasp.grasp_pose.pose.orientation.z;
+      marker.pose.orientation.w = best_grasp.grasp_pose.pose.orientation.w;
+
+      // Set the scale of the marker -- 1x1x1 here means 1m on a side
+      marker.scale.x = 0.1;
+      marker.scale.y = 0.1;
+      marker.scale.z = 0.1;
+
+      // Set the color -- be sure to set alpha to something non-zero!
+      marker.color.r = 0.0f;
+      marker.color.g = 1.0f;
+      marker.color.b = 0.0f;
+      marker.color.a = 1.0;
+
+      marker.lifetime = ros::Duration();
+
+      marker_pub.publish(marker);
+    }
+
+    // call pick using the best grasp
     pick(best_grasp);
   }
 

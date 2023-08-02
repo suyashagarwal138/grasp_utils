@@ -35,17 +35,17 @@ int main(int argc, char **argv)
             // Make a Grasp that will get pushed onto the array
             moveit_msgs::Grasp grasp;
 
-            // Randomise the position variables with values from 0 to 9
+            // Randomise the position variables with values from 0 to 1
             float rm = RAND_MAX;
 
-            float x = (rand()/rm) * 9;
-            float y = (rand()/rm) * 9;
-            float z = (rand()/rm) * 9;
+            float x = (rand()/rm) * 0.5;
+            float y = (rand()/rm) * 0.5;
+            float z = (rand()/rm) * 0.5;
             grasp.grasp_pose.pose.position.x = x;
             grasp.grasp_pose.pose.position.y = y;
             grasp.grasp_pose.pose.position.z = z;
 
-            // Randomise the grasp score, also from 0 to 9
+            // Randomise the grasp score, also from 0 to 1
             grasp.grasp_quality = y;
 
             // The same can be done for the quaternion defining orientation
