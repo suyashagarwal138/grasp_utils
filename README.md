@@ -9,4 +9,4 @@ This can be replaced in due course.
 
 The executor node also implements IK checking - the highest quality grasp that passes the check is the one that gets executed.
 
-Edit from the k1 branch
+Changes to URDF for K1 arm are on the k1 branch.
