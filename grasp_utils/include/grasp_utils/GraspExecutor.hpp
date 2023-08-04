@@ -261,53 +261,35 @@ namespace grasp_utils
   // Define member function graspsCallback
   void GraspExecutor::graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg){
 
-    int no_of_elements = msg->array.size();
-
-    // Initialise two variables that we will use in the loop to find the best grasp
-    float best_grasp_quality = 0.0;
-    int best_grasp_id = 0;
-
-    // Loop through the array of grasps to find the highest grasp quality
-    for(int i = 0; i < no_of_elements; i++){
-      if (msg->array[i].grasp_quality > best_grasp_quality){
-        best_grasp_quality = msg->array[i].grasp_quality;
-        best_grasp_id = i;
-      }
-    };
-
-    std::vector<moveit_msgs::Grasp> sorted_grasps;
-    sorted_grasps.resize(no_of_elements);
-
-    std::partial_sort_copy(msg->array.begin(),msg->array.end(),sorted_grasps.begin(),sorted_grasps.end(),compare);
-
-    // debugging outputs to confirm sorting works
-    ROS_INFO("%f",best_grasp_quality);
-    ROS_INFO("%f",sorted_grasps[0].grasp_quality);
-
-    // Output the best grasp.
-    // For a 64-grasp array, this will be a number from 0  to 63. 
-    std::string output_msg = "Best grasp was no. " + std::to_string(best_grasp_id);
-    ROS_INFO("Best grasp was no. %d", best_grasp_id);
-
-    // Set the best grasp so it can be executed
-    moveit_msgs::Grasp best_grasp = msg->array[best_grasp_id];
-
-    // Print result of IK check
-    if(IKchecker(best_grasp)){
-      ROS_INFO("successful IK check");
-    }
-    else{
-      ROS_INFO("unsuccessful IK check");
-    }
-
     // Set the maximum planning time
     group.setPlanningTime(45.0);
 
-    // Debugging outputs - delete later
-    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.x);
-    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.y);
-    ROS_INFO("%f",best_grasp.grasp_pose.pose.position.z);
+    int no_of_elements = msg->array.size();
 
+    // Sort the grasps by grasp quality
+    std::vector<moveit_msgs::Grasp> sorted_grasps;
+    sorted_grasps.resize(no_of_elements);
+    std::partial_sort_copy(msg->array.begin(),msg->array.end(),sorted_grasps.begin(),sorted_grasps.end(),compare);
+
+    // The grasp that ends up being executed will be assigned to this variable
+    moveit_msgs::Grasp best_grasp;
+
+    // Loop through the sorted grasp vector to find the first grasp that can be executed
+    for(int j = 0; j < no_of_elements; j++){
+      ROS_INFO("Checking grasp no. %d",j);
+      if(IKchecker(sorted_grasps[j])){
+        // execute the grasp and terminate the loop
+        ROS_INFO("IK check passed - executing grasp no. %d",j);
+        best_grasp = sorted_grasps[j];
+        pick(sorted_grasps[j]);
+        break;
+      }
+      else{
+        ROS_INFO("IK check failed");
+      }
+    }
+
+    // Marker code - none of this currently gets executed but not really needed at the moment
     while (ros::ok())
     {
       visualization_msgs::Marker marker;
@@ -349,9 +331,6 @@ namespace grasp_utils
       marker.lifetime = ros::Duration();
 
       marker_pub.publish(marker);      
-
-      // call pick using the best grasp
-      pick(best_grasp);
     }
 
     

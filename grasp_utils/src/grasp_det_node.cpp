@@ -38,7 +38,7 @@ int main(int argc, char **argv)
             // Randomise the position variables with values from 0.1 to 0.5
             float rm = RAND_MAX;
 
-            float x = (rand()/rm) * 0.4 + 0.1;
+            float x = (rand()/rm) * 1 + 0.1;
             float y = (rand()/rm) * 0.4 + 0.1;
             float z = (rand()/rm) * 0.4 + 0.1;
             grasp.grasp_pose.pose.position.x = x;
