@@ -7,3 +7,4 @@ The messages sent over this topic are of type GraspArray. These are simply array
 Currently, the grasp positions sent are randomly generated so that the basic pipeline can be established. 
 This can be replaced in due course. 
 
+The executor node also implements IK checking - the highest quality grasp that passes the check is the one that gets executed.
