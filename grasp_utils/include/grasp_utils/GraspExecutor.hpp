@@ -42,8 +42,8 @@ namespace grasp_utils
     {
       /* Add both finger joints of panda robot. */
       posture.joint_names.resize(2);
-      posture.joint_names[0] = "panda_finger_joint1";
-      posture.joint_names[1] = "panda_finger_joint2";
+      posture.joint_names[0] = "joint_gripper_left";
+      posture.joint_names[1] = "joint_gripper_right";
 
       /* Set them as open. */
       posture.points.resize(1);
@@ -57,8 +57,8 @@ namespace grasp_utils
     {
       /* Add both finger joints of panda robot. */
       posture.joint_names.resize(2);
-      posture.joint_names[0] = "panda_finger_joint1";
-      posture.joint_names[1] = "panda_finger_joint2";
+      posture.joint_names[0] = "joint_gripper_left";
+      posture.joint_names[1] = "joint_gripper_right";
 
       /* Set them as closed. */
       posture.points.resize(1);
@@ -79,7 +79,7 @@ namespace grasp_utils
     //   // Make sure that when you set the grasp_pose, you are setting it to be the pose of the last link in
     //   // your manipulator which in this case would be `"panda_link8"` You will have to compensate for the
     //   // transform from `"panda_link8"` to the palm of the end effector.
-    //   grasp_.grasp_pose.header.frame_id = "panda_link0";
+    //   grasp_.grasp_pose.header.frame_id = "sgr532/base_link";
     //   // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
     //   tf2::Quaternion orientation(1.0,0.0,0.0,0.0);                                   // chosen this as default orientation
     //   // orientation.setRPY(-tau / 4, -tau / 8, -tau / 4);
@@ -87,7 +87,7 @@ namespace grasp_utils
     //   // Setting pre-grasp approach
     //   // ++++++++++++++++++++++++++
     //   /* Defined with respect to frame_id */
-    //   grasp_.pre_grasp_approach.direction.header.frame_id = "panda_link0";
+    //   grasp_.pre_grasp_approach.direction.header.frame_id = "sgr532/base_link";
     //   /* Direction is set as positive x axis */
     //   grasp_.pre_grasp_approach.direction.vector.x = 1.0;
     //   grasp_.pre_grasp_approach.min_distance = 0.095;
@@ -95,7 +95,7 @@ namespace grasp_utils
     //   // Setting post-grasp retreat
     //   // ++++++++++++++++++++++++++
     //   /* Defined with respect to frame_id */
-    //   grasp_.post_grasp_retreat.direction.header.frame_id = "panda_link0";
+    //   grasp_.post_grasp_retreat.direction.header.frame_id = "sgr532/base_link";
     //   /* Direction is set as positive z axis */
     //   grasp_.post_grasp_retreat.direction.vector.z = 1.0;
     //   grasp_.post_grasp_retreat.min_distance = 0.1;
@@ -124,7 +124,7 @@ namespace grasp_utils
       // Make sure that when you set the grasp_pose, you are setting it to be the pose of the last link in
       // your manipulator which in this case would be `"panda_link8"` You will have to compensate for the
       // transform from `"panda_link8"` to the palm of the end effector.
-      grasp_.grasp_pose.header.frame_id = "panda_link0";
+      grasp_.grasp_pose.header.frame_id = "sgr532/base_link";
 
       // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
       tf2::Quaternion orientation;
@@ -134,7 +134,7 @@ namespace grasp_utils
       // Setting pre-grasp approach
       // ++++++++++++++++++++++++++
       /* Defined with respect to frame_id */
-      grasp_.pre_grasp_approach.direction.header.frame_id = "panda_link0";
+      grasp_.pre_grasp_approach.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as positive x axis */
       grasp_.pre_grasp_approach.direction.vector.x = 1.0;
       grasp_.pre_grasp_approach.min_distance = 0.095;
@@ -143,7 +143,7 @@ namespace grasp_utils
       // Setting post-grasp retreat
       // ++++++++++++++++++++++++++
       /* Defined with respect to frame_id */
-      grasp_.post_grasp_retreat.direction.header.frame_id = "panda_link0";
+      grasp_.post_grasp_retreat.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as positive z axis */
       grasp_.post_grasp_retreat.direction.vector.z = 1.0;
       grasp_.post_grasp_retreat.min_distance = 0.1;
@@ -175,7 +175,7 @@ namespace grasp_utils
 
       // Setting place location pose
       // +++++++++++++++++++++++++++
-      place_location[0].place_pose.header.frame_id = "panda_link0";
+      place_location[0].place_pose.header.frame_id = "sgr532/base_link";
       tf2::Quaternion orientation;
       orientation.setRPY(0, 0, tau / 4);  // A quarter turn about the z-axis
       place_location[0].place_pose.pose.orientation = tf2::toMsg(orientation);
@@ -188,7 +188,7 @@ namespace grasp_utils
       // Setting pre-place approach
       // ++++++++++++++++++++++++++
       /* Defined with respect to frame_id */
-      place_location[0].pre_place_approach.direction.header.frame_id = "panda_link0";
+      place_location[0].pre_place_approach.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as negative z axis */
       place_location[0].pre_place_approach.direction.vector.z = -1.0;
       place_location[0].pre_place_approach.min_distance = 0.095;
@@ -197,7 +197,7 @@ namespace grasp_utils
       // Setting post-grasp retreat
       // ++++++++++++++++++++++++++
       /* Defined with respect to frame_id */
-      place_location[0].post_place_retreat.direction.header.frame_id = "panda_link0";
+      place_location[0].post_place_retreat.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as negative y axis */
       place_location[0].post_place_retreat.direction.vector.y = -1.0;
       place_location[0].post_place_retreat.min_distance = 0.1;
@@ -229,7 +229,7 @@ namespace grasp_utils
     virtual ~GraspExecutor();
 
     // assign movegroup here as member variable
-    moveit::planning_interface::MoveGroupInterface group{"panda_arm"};
+    moveit::planning_interface::MoveGroupInterface group{"arm_controller"};
 
     // Need to store the joint state in the class
     sensor_msgs::JointState current_joint_state;
@@ -294,7 +294,7 @@ namespace grasp_utils
     {
       visualization_msgs::Marker marker;
       // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-      marker.header.frame_id = "panda_link0";
+      marker.header.frame_id = "sgr532/base_link";
       marker.header.stamp = ros::Time::now();
 
       // Set the namespace and id for this marker.  This serves to create a unique ID
@@ -344,7 +344,7 @@ namespace grasp_utils
 
     // Assigning the required information to the IK request
     req.ik_request.pose_stamped = grasp.grasp_pose;
-    req.ik_request.group_name = "panda_arm";
+    req.ik_request.group_name = "arm_controller";
     req.ik_request.robot_state.joint_state = current_joint_state;
 
     // call the IK service, checking that the request and response parameters were
