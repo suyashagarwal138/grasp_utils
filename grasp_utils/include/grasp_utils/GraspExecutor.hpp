@@ -118,6 +118,9 @@ namespace grasp_utils
       // For now, just attempting 1 grasp to get the pipline running. 
       // Later, will change so that a GraspArray is sent to MoveIt. 
 
+      ROS_INFO("x: %f",grasp_.grasp_pose.pose.position.x);
+      ROS_INFO("y: %f",grasp_.grasp_pose.pose.position.y);
+      ROS_INFO("z: %f",grasp_.grasp_pose.pose.position.z);
       // Setting grasp pose
       // ++++++++++++++++++++++
       // This is the pose of panda_link8. |br|
