@@ -160,8 +160,8 @@ namespace grasp_utils
       // +++++++++++++++++++++++++++++++++++
       closedGripper(grasp_.grasp_posture);
 
-      // Set support surface as table1.
-      group.setSupportSurfaceName("table1");
+      // Set support surface as table1. Not currently adding a table as a support surface.
+      // group.setSupportSurfaceName("table1");
       // Call pick to pick up the object using the grasp(s) given
       group.pick("object", grasp_);
     }
@@ -217,6 +217,36 @@ namespace grasp_utils
       group.place("object", place_location);
     }
 
+    void addCollisionObjects(moveit::planning_interface::PlanningSceneInterface& planning_scene_interface, moveit_msgs::Grasp grasp)
+    {
+      // Create vector to hold 3 collision objects.
+      std::vector<moveit_msgs::CollisionObject> collision_objects;
+      collision_objects.resize(1);
+
+      // Define the object that we will be manipulating
+      collision_objects[0].header.frame_id = "panda_link0";
+      collision_objects[0].id = "object";
+
+      /* Define the primitive and its dimensions. */
+      collision_objects[0].primitives.resize(1);
+      collision_objects[0].primitives[0].type = collision_objects[1].primitives[0].BOX;
+      collision_objects[0].primitives[0].dimensions.resize(3);
+      collision_objects[0].primitives[0].dimensions[0] = 0.02;
+      collision_objects[0].primitives[0].dimensions[1] = 0.02;
+      collision_objects[0].primitives[0].dimensions[2] = 0.2;
+
+      /* Define the pose of the object. */
+      collision_objects[0].primitive_poses.resize(1);
+      collision_objects[0].primitive_poses[0].position.x = grasp.grasp_pose.pose.position.x;
+      collision_objects[0].primitive_poses[0].position.y = grasp.grasp_pose.pose.position.y;
+      collision_objects[0].primitive_poses[0].position.z = grasp.grasp_pose.pose.position.z;
+      collision_objects[0].primitive_poses[0].orientation.w = 1.0;
+
+      collision_objects[0].operation = collision_objects[0].ADD;
+
+      planning_scene_interface.applyCollisionObjects(collision_objects);
+    }
+
     // Add graspsCallback as a member functionn
     void graspsCallback(const grasp_utils::GraspArray::ConstPtr &msg);
 
@@ -233,6 +263,9 @@ namespace grasp_utils
 
     // assign movegroup here as member variable
     moveit::planning_interface::MoveGroupInterface group{"arm_controller"};
+
+    // Declare the planning scene interface
+    moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
     // Need to store the joint state in the class
     sensor_msgs::JointState current_joint_state;
@@ -284,6 +317,7 @@ namespace grasp_utils
         // execute the grasp and terminate the loop
         ROS_INFO("IK check passed - executing grasp no. %d",j);
         best_grasp = sorted_grasps[j];
+        addCollisionObjects(planning_scene_interface,best_grasp);
         pick(sorted_grasps[j]);
         break;
       }

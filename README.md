@@ -9,7 +9,7 @@ This can be replaced in due course.
 
 The executor node also implements IK checking - the highest quality grasp that passes the check is the one that gets executed.
 
-Changes to URDF for K1 arm are on the k1 branch.
+Changes to codebase for K1 arm are currently on the k1 branch only.
 
 For use with the Panda arm:
 Must first run  roslaunch panda_moveit_config demo.launch
@@ -17,4 +17,4 @@ panda_moveit_config is provided by MoveIt!
 
 For use with the K1 arm:
 Must first run roslaunch k1_moveit_config demo.launch
-k1_moveit_config is a custom config package I created.
+k1_moveit_config is a custom config package.

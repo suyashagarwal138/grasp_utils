@@ -80,5 +80,6 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/suyash5/ws_moveit/src/grasping_utils/grasp_utils"
 }
