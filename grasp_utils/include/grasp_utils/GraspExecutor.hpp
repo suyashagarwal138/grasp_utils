@@ -224,7 +224,7 @@ namespace grasp_utils
       collision_objects.resize(1);
 
       // Define the object that we will be manipulating
-      collision_objects[0].header.frame_id = "panda_link0";
+      collision_objects[0].header.frame_id = "sgr532/base_link";
       collision_objects[0].id = "object";
 
       /* Define the primitive and its dimensions. */
@@ -308,7 +308,7 @@ namespace grasp_utils
     std::partial_sort_copy(msg->array.begin(),msg->array.end(),sorted_grasps.begin(),sorted_grasps.end(),compare);
 
     // The grasp that ends up being executed will be assigned to this variable
-    moveit_msgs::Grasp best_grasp;
+    moveit_msgs::Grasp best_grasp;   
 
     // Loop through the sorted grasp vector to find the first grasp that can be executed
     for(int j = 0; j < no_of_elements; j++){
@@ -317,7 +317,7 @@ namespace grasp_utils
         // execute the grasp and terminate the loop
         ROS_INFO("IK check passed - executing grasp no. %d",j);
         best_grasp = sorted_grasps[j];
-        addCollisionObjects(planning_scene_interface,best_grasp);
+        addCollisionObjects(planning_scene_interface,best_grasp); 
         pick(sorted_grasps[j]);
         break;
       }
@@ -327,49 +327,45 @@ namespace grasp_utils
     }
 
     // Marker code - none of this currently gets executed but not really needed at the moment
-    while (ros::ok())
-    {
-      visualization_msgs::Marker marker;
-      // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-      marker.header.frame_id = "sgr532/base_link";
-      marker.header.stamp = ros::Time::now();
+    visualization_msgs::Marker marker;
+    // Set the frame ID and timestamp.  See the TF tutorials for information on these.
+    marker.header.frame_id = "sgr532/base_link";
+    marker.header.stamp = ros::Time::now();
 
-      // Set the namespace and id for this marker.  This serves to create a unique ID
-      // Any marker sent with the same namespace and id will overwrite the old one
-      marker.ns = "basic_shapes";
-      marker.id = 0;
+    // Set the namespace and id for this marker.  This serves to create a unique ID
+    // Any marker sent with the same namespace and id will overwrite the old one
+    marker.ns = "basic_shapes";
+    marker.id = 0;
 
-      // Set the marker type.
-      marker.type = visualization_msgs::Marker::CUBE;
+    // Set the marker type.
+    marker.type = visualization_msgs::Marker::CUBE;
 
-      // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
-      marker.action = visualization_msgs::Marker::ADD;
+    // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+    marker.action = visualization_msgs::Marker::ADD;
 
-      // Set the pose of the marker (should be at pose of attempted grasp)
-      marker.pose.position.x = best_grasp.grasp_pose.pose.position.x;
-      marker.pose.position.y = best_grasp.grasp_pose.pose.position.y;
-      marker.pose.position.z = best_grasp.grasp_pose.pose.position.z;
-      marker.pose.orientation.x = best_grasp.grasp_pose.pose.orientation.x;
-      marker.pose.orientation.y = best_grasp.grasp_pose.pose.orientation.y;
-      marker.pose.orientation.z = best_grasp.grasp_pose.pose.orientation.z;
-      marker.pose.orientation.w = best_grasp.grasp_pose.pose.orientation.w;
+    // Set the pose of the marker (should be at pose of attempted grasp)
+    marker.pose.position.x = best_grasp.grasp_pose.pose.position.x;
+    marker.pose.position.y = best_grasp.grasp_pose.pose.position.y;
+    marker.pose.position.z = best_grasp.grasp_pose.pose.position.z;
+    marker.pose.orientation.x = best_grasp.grasp_pose.pose.orientation.x;
+    marker.pose.orientation.y = best_grasp.grasp_pose.pose.orientation.y;
+    marker.pose.orientation.z = best_grasp.grasp_pose.pose.orientation.z;
+    marker.pose.orientation.w = best_grasp.grasp_pose.pose.orientation.w;
 
-      // Set the scale of the marker -- 1x1x1 here means 1m on a side
-      marker.scale.x = 0.1;
-      marker.scale.y = 0.1;
-      marker.scale.z = 0.1;
+    // Set the scale of the marker -- 1x1x1 here means 1m on a side
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+    marker.scale.z = 0.1;
 
-      // Set the color -- be sure to set alpha to something non-zero!
-      marker.color.r = 0.0f;
-      marker.color.g = 1.0f;
-      marker.color.b = 0.0f;
-      marker.color.a = 1.0;
+    // Set the color -- be sure to set alpha to something non-zero!
+    marker.color.r = 0.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0;
 
-      marker.lifetime = ros::Duration();
+    marker.lifetime = ros::Duration();
 
-      marker_pub.publish(marker);      
-    }
-
+    marker_pub.publish(marker);  
     
   }
 

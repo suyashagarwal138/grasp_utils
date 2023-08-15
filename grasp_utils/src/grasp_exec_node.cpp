@@ -9,11 +9,6 @@ int main(int argc, char **argv)
 
   ros::NodeHandle nodeHandle("grasp_executor");
 
-  // ros::AsyncSpinner spinner(1);
-  // spinner.start();
-
-  // ros::WallDuration(1.0).sleep();
-
   grasp_utils::GraspExecutor graspExecutor(nodeHandle);
 
   ros::Rate loop_rate(0.4);
