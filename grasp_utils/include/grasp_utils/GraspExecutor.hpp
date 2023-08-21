@@ -48,8 +48,8 @@ namespace grasp_utils
       /* Set them as open. */
       posture.points.resize(1);
       posture.points[0].positions.resize(2);
-      posture.points[0].positions[0] = 0.04;
-      posture.points[0].positions[1] = 0.04;
+      posture.points[0].positions[0] = 0.00;
+      posture.points[0].positions[1] = 0.00;
       posture.points[0].time_from_start = ros::Duration(0.5);
     }
 
@@ -63,8 +63,8 @@ namespace grasp_utils
       /* Set them as closed. */
       posture.points.resize(1);
       posture.points[0].positions.resize(2);
-      posture.points[0].positions[0] = 0.00;
-      posture.points[0].positions[1] = 0.00;
+      posture.points[0].positions[0] = -0.03;
+      posture.points[0].positions[1] = -0.03;
       posture.points[0].time_from_start = ros::Duration(0.5);
     }
     
@@ -115,8 +115,9 @@ namespace grasp_utils
     // Using this version which takes grasp as input
     void pick(moveit_msgs::Grasp grasp_)
     {
-      // For now, just attempting 1 grasp to get the pipline running. 
-      // Later, will change so that a GraspArray is sent to MoveIt. 
+      group.setMaxVelocityScalingFactor(0.1);
+
+      group.setStartStateToCurrentState();
 
       ROS_INFO("x: %f",grasp_.grasp_pose.pose.position.x);
       ROS_INFO("y: %f",grasp_.grasp_pose.pose.position.y);
@@ -129,6 +130,9 @@ namespace grasp_utils
       // transform from `"panda_link8"` to the palm of the end effector.
       grasp_.grasp_pose.header.frame_id = "sgr532/base_link";
 
+      // group.setPoseTarget()
+      // grasp_.pre_grasp_posture = "home";
+
       // Set the orientation of the chosen grasp (wasn't done in grasp_det_node.cpp)
       tf2::Quaternion orientation;
       orientation.setRPY(-tau / 4, -tau / 8, -tau / 4);
@@ -140,7 +144,7 @@ namespace grasp_utils
       grasp_.pre_grasp_approach.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as positive x axis */
       grasp_.pre_grasp_approach.direction.vector.x = 1.0;
-      grasp_.pre_grasp_approach.min_distance = 0.095;
+      grasp_.pre_grasp_approach.min_distance = 0.005;           // was 0.095
       grasp_.pre_grasp_approach.desired_distance = 0.115;
 
       // Setting post-grasp retreat
@@ -149,21 +153,22 @@ namespace grasp_utils
       grasp_.post_grasp_retreat.direction.header.frame_id = "sgr532/base_link";
       /* Direction is set as positive z axis */
       grasp_.post_grasp_retreat.direction.vector.z = 1.0;
-      grasp_.post_grasp_retreat.min_distance = 0.1;
+      grasp_.post_grasp_retreat.min_distance = 0.01;            // was 0.1
       grasp_.post_grasp_retreat.desired_distance = 0.25;
 
       // Setting posture of eef before grasp
       // +++++++++++++++++++++++++++++++++++
-      openGripper(grasp_.pre_grasp_posture);
+      // openGripper(grasp_.pre_grasp_posture);
 
       // Setting posture of eef during grasp
       // +++++++++++++++++++++++++++++++++++
       closedGripper(grasp_.grasp_posture);
+      ROS_INFO("gripper closed");
 
       // Set support surface as table1. Not currently adding a table as a support surface.
       // group.setSupportSurfaceName("table1");
       // Call pick to pick up the object using the grasp(s) given
-      group.pick("object", grasp_);
+      // group.pick("object", grasp_);
     }
 
     void place(moveit::planning_interface::MoveGroupInterface& group)
@@ -318,7 +323,7 @@ namespace grasp_utils
         ROS_INFO("IK check passed - executing grasp no. %d",j);
         best_grasp = sorted_grasps[j];
         addCollisionObjects(planning_scene_interface,best_grasp); 
-        pick(sorted_grasps[j]);
+        pick(best_grasp);
         break;
       }
       else{
