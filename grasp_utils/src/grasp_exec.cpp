@@ -11,7 +11,7 @@ namespace grasp_utils
   GraspExecutor::GraspExecutor(ros::NodeHandle &nodeHandle): nodeHandle_(nodeHandle)
   {
     // Need to subscribe to /joint_states topic for IK checking
-    js_subscriber = nodeHandle_.subscribe("joint_states",1000,&GraspExecutor::jointStateCallback, this);
+    js_subscriber = nodeHandle_.subscribe("/joint_states",1000,&GraspExecutor::jointStateCallback, this);
 
     // Should subscribe to the /grasps topic
     subscriber_ = nodeHandle_.subscribe("grasps",1000, &GraspExecutor::graspsCallback, this);
